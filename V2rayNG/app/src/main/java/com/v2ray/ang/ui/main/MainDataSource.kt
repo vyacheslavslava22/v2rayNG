@@ -22,6 +22,9 @@ interface MainDataSource : Closeable {
     fun getDoubleColumnDisplay(): Boolean
     fun isGroupAllDisplayEnabled(): Boolean
 
+    /** Whether the fastest server is selected automatically after a bulk test. */
+    fun isAutoSelectBestAfterTestEnabled(): Boolean = false
+
     fun getString(resId: Int): String
     fun getString(resId: Int, vararg formatArgs: Any): String
 

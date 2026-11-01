@@ -30,6 +30,7 @@ import com.v2ray.ang.util.LogUtil
 import com.v2ray.ang.util.Utils
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Locale
 import kotlin.random.Random
 
 object SettingsManager {
@@ -52,7 +53,9 @@ object SettingsManager {
     private fun initRoutingRulesets(context: Context) {
         val exist = MmkvManager.decodeRoutingRulesets()
         if (exist.isNullOrEmpty()) {
-            val rulesetList = getPresetRoutingRulesets(context)
+            // First launch: Russian-speaking users get the Russia preset (Russian sites direct).
+            val presetType = if (Locale.getDefault().language == "ru") RoutingType.WHITE_RUSSIA else RoutingType.WHITE
+            val rulesetList = getPresetRoutingRulesets(context, presetType) ?: getPresetRoutingRulesets(context)
             MmkvManager.encodeRoutingRulesets(rulesetList)
         }
     }

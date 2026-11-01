@@ -18,6 +18,7 @@ import com.v2ray.ang.extension.delay
 import com.v2ray.ang.extension.isComplexType
 import com.v2ray.ang.extension.matchesPattern
 import com.v2ray.ang.extension.moveItem
+import com.v2ray.ang.handler.HappLinkParser
 import com.v2ray.ang.handler.SubscriptionInfoParser
 import com.v2ray.ang.ui.base.BaseViewModel
 import com.v2ray.ang.util.LogUtil
@@ -523,12 +524,19 @@ class MainViewModel(
                         configText, uiState.value.selectedGroupId, true
                     )
                     when {
+                        // Only Happ routing profile links were pasted: nothing but the routing changed.
+                        count > 0 && HappLinkParser.extractRoutingLinks(configText).isNotEmpty() &&
+                                HappLinkParser.normalizeImportText(configText).isNullOrBlank() ->
+                            toastSuccess(R.string.toast_happ_routing_imported)
+
                         count > 0 -> {
                             toast(dataSource.getString(R.string.title_import_config_count, count))
                             setupGroupTab(forceRefresh = true)
                         }
 
                         countSub > 0 -> setupGroupTab(forceRefresh = true)
+                        HappLinkParser.containsEncryptedLink(configText) ->
+                            toastError(R.string.toast_happ_encrypted_unsupported)
                         else -> toastError(R.string.toast_failure)
                     }
                 } catch (cancelled: CancellationException) {
@@ -899,11 +907,32 @@ class MainViewModel(
     }
 
     private fun onTestsFinished(requestId: String) {
-        if (testRequests.completeBulk(requestId) == null) return
+        val request = testRequests.completeBulk(requestId) ?: return
         resetTestStatus()
         viewModelScope.launch(ioDispatcher) {
             cacheMutex.withLock { groupDataCache.clear() }
+            selectFastestServerAfterTest(request.groupId)
             reloadAllGroups(_uiState.value.groups.map { it.id })
+        }
+    }
+
+    /**
+     * When enabled in settings, selects the server of [groupId] with the lowest positive delay.
+     * Skipped while connected so a finished test never reconnects the user unexpectedly; the
+     * choice then applies to the next connection the user starts.
+     */
+    private fun selectFastestServerAfterTest(groupId: String) {
+        if (_uiState.value.isRunning || !dataSource.isAutoSelectBestAfterTestEnabled()) return
+        val fastest = dataSource.getServerGuidList(groupId)
+            .mapNotNull { guid ->
+                val delayMillis = dataSource.decodeAffiliationInfo(guid)?.testDelayMillis ?: 0L
+                if (delayMillis > 0L) guid to delayMillis else null
+            }
+            .minByOrNull { it.second }
+            ?.first
+            ?: return
+        if (fastest != dataSource.getSelectServer()) {
+            updateSelectedGuid(fastest)
         }
     }
 

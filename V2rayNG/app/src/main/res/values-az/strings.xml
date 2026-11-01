@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">v2rayNG</string>
+    <string name="app_name" translatable="false">NovaRay</string>
     <string name="app_widget_name">Keçid</string>
     <string name="app_tile_name">Keçid</string>
     <string name="app_tile_first_use">Bu funksiyanı istifadə etməzdən əvvəl tətbiqə profil əlavə edin.</string>
@@ -14,7 +14,7 @@
     <string name="pull_down_to_refresh">Yeniləmək üçün aşağı çəkin!</string>
 
     <!-- Notifications -->
-    <string name="notification_channel_service">v2rayNG xidməti</string>
+    <string name="notification_channel_service">NovaRay xidməti</string>
     <string name="notification_channel_subscription_updates">Abunəlik yenilənmələri</string>
     <string name="notification_channel_connection_checks">Bağlantı yoxlamaları</string>
     <string name="notification_action_stop_v2ray">Dayandır</string>
@@ -565,5 +565,13 @@
     <string name="sub_info_open_page">Abunəlik səhifəsini aç</string>
     <string name="sub_info_traffic" translatable="false">%1$s / %2$s</string>
     <string name="sub_info_unlimited">Limitsiz</string>
+
+    <!-- NovaRay additions -->
+    <string name="toast_happ_routing_imported">Routing profile imported</string>
+    <string name="toast_happ_encrypted_unsupported">Encrypted Happ links (happ://crypt) cannot be opened by other apps. Ask your provider for a regular subscription link.</string>
+    <string name="title_pref_auto_select_best_after_test">Select fastest server after test</string>
+    <string name="summary_pref_auto_select_best_after_test">After testing all servers, select the one with the lowest delay (only while disconnected)</string>
+    <string name="title_pref_apply_sub_routing">Apply routing from subscription</string>
+    <string name="summary_pref_apply_sub_routing">Use the routing profile your provider sends with the subscription (Happ-compatible header)</string>
 
 </resources>

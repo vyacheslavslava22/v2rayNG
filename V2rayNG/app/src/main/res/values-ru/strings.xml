@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">v2rayNG</string>
-    <string name="app_widget_name">v2rayNG</string>
-    <string name="app_tile_name">v2rayNG</string>
+    <string name="app_name" translatable="false">NovaRay</string>
+    <string name="app_widget_name">NovaRay</string>
+    <string name="app_tile_name">NovaRay</string>
     <string name="app_tile_first_use">Добавьте профиль в приложении перед использованием этой функции.</string>
     <string name="navigation_drawer_open">Открыть панель навигации</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
@@ -14,7 +14,7 @@
     <string name="pull_down_to_refresh">Потяните вниз для обновления!</string>
 
     <!-- Notifications -->
-    <string name="notification_channel_service">Служба v2rayNG</string>
+    <string name="notification_channel_service">Служба NovaRay</string>
     <string name="notification_channel_subscription_updates">Обновления подписок</string>
     <string name="notification_channel_connection_checks">Проверки соединения</string>
     <string name="notification_action_stop_v2ray">Остановить</string>
@@ -568,5 +568,13 @@
     <string name="sub_info_open_support">Открыть ссылку поддержки</string>
     <string name="sub_info_open_page">Открыть страницу подписки</string>
     <string name="sub_info_unlimited">Без ограничений</string>
+
+    <!-- NovaRay additions -->
+    <string name="toast_happ_routing_imported">Профиль маршрутизации импортирован</string>
+    <string name="toast_happ_encrypted_unsupported">Зашифрованные ссылки Happ (happ://crypt) не открываются в других приложениях. Попросите у провайдера обычную ссылку на подписку.</string>
+    <string name="title_pref_auto_select_best_after_test">Выбирать самый быстрый сервер после теста</string>
+    <string name="summary_pref_auto_select_best_after_test">После проверки всех серверов выбирать сервер с наименьшей задержкой (только когда VPN отключён)</string>
+    <string name="title_pref_apply_sub_routing">Маршрутизация из подписки</string>
+    <string name="summary_pref_apply_sub_routing">Применять профиль маршрутизации, который провайдер передаёт вместе с подпиской (совместимо с Happ)</string>
 
 </resources>

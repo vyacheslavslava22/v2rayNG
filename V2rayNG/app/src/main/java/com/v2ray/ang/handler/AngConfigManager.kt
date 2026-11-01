@@ -183,23 +183,34 @@ object AngConfigManager {
      */
     fun importBatchConfig(server: String?, subid: String, append: Boolean): Pair<Int, Int> {
         return try {
-            var count = parseBatchConfig(Utils.decode(server), subid, append)
-            if (count <= 0) {
-                count = parseBatchConfig(server, subid, append)
+            // Happ links: apply routing profiles, unwrap happ://add/<url> into the plain URL.
+            val routingCount = if (server?.contains("happ://", ignoreCase = true) == true) {
+                HappRoutingImporter.importFromText(server)
+            } else {
+                0
             }
-            if (count <= 0) {
-                count = parseCustomConfigServer(server, subid, append)
+            val text = HappLinkParser.normalizeImportText(server)
+            if (routingCount > 0 && text.isNullOrBlank()) {
+                return routingCount to 0
             }
 
-            var countSub = parseBatchSubscription(server)
+            var count = parseBatchConfig(Utils.decode(text), subid, append)
+            if (count <= 0) {
+                count = parseBatchConfig(text, subid, append)
+            }
+            if (count <= 0) {
+                count = parseCustomConfigServer(text, subid, append)
+            }
+
+            var countSub = parseBatchSubscription(text)
             if (countSub <= 0) {
-                countSub = parseBatchSubscription(Utils.decode(server))
+                countSub = parseBatchSubscription(Utils.decode(text))
             }
             if (countSub > 0) {
                 updateConfigViaSubAll()
             }
 
-            count to countSub
+            (count + routingCount) to countSub
         } catch (e: ProfileStorageException) {
             LogUtil.e(AppConfig.TAG, "Failed to store imported profiles", e)
             0 to 0
@@ -492,13 +503,17 @@ object AngConfigManager {
 
             // Account info (traffic, expiry, support link) the panel sends in the response headers.
             var usageInfo: SubscriptionUsageInfo? = null
+            // Happ-compatible panels may also push a routing profile in the `routing` header.
+            var routingHeader: String? = null
             val captureUsageInfo: (Headers) -> Unit = { headers ->
                 usageInfo = SubscriptionInfoParser.parse(
                     userInfo = headers["Subscription-Userinfo"],
                     profileTitle = headers["Profile-Title"],
                     supportUrl = headers["Support-Url"],
                     webPageUrl = headers["Profile-Web-Page-Url"],
+                    announce = headers["Announce"],
                 )
+                routingHeader = headers["Routing"]
             }
 
             var configText = try {
@@ -544,6 +559,11 @@ object AngConfigManager {
                 // Replaced on every successful update so the box disappears if the panel stops sending the headers.
                 it.subscription.usageInfo = usageInfo
                 MmkvManager.encodeSubscription(it.guid, it.subscription)
+                try {
+                    HappRoutingImporter.applyFromSubscriptionHeader(it.guid, routingHeader)
+                } catch (e: Exception) {
+                    LogUtil.e(AppConfig.TAG, "Failed to apply subscription routing header", e)
+                }
                 LogUtil.i(AppConfig.TAG, "Subscription updated: ${it.subscription.remarks}, $count configs")
                 return SubscriptionUpdateResult(
                     configCount = count,

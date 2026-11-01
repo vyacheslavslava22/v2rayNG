@@ -10,11 +10,20 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.v2ray.ang"
+        // NovaRay: own package so it installs next to v2rayNG. The Kotlin namespace stays
+        // com.v2ray.ang to keep the diff against upstream small and mergeable.
+        applicationId = "com.novaray.vpn"
         minSdk = 24
         targetSdk = 37
-        versionCode = 755
-        versionName = "2.3.15"
+        // CI builds append the GitHub Actions run number, so every build is a newer version
+        // that installs over the previous one and the in-app update check can compare them.
+        val ciBuildNumber = (System.getenv("GITHUB_RUN_NUMBER") ?: "0").toIntOrNull() ?: 0
+        versionCode = 755 * 1000 + ciBuildNumber.coerceIn(0, 999)
+        versionName = "2.3.15.$ciBuildNumber"
+
+        // In-app "check for updates" looks at the releases of the repository that built the APK.
+        val updateRepo = System.getenv("GITHUB_REPOSITORY")?.takeIf { it.isNotBlank() } ?: "2dust/v2rayNG"
+        buildConfigField("String", "UPDATE_REPO", "\"$updateRepo\"")
 
         val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
         splits {
@@ -92,7 +101,7 @@ android {
                 .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
                 .forEach { output ->
                     val abi = output.getFilter("ABI") ?: "universal"
-                    output.outputFileName = "v2rayNG_${variant.versionName}-fdroid_${abi}.apk"
+                    output.outputFileName = "NovaRay_${variant.versionName}-fdroid_${abi}.apk"
                     if (versionCodes.containsKey(abi)) {
                         output.versionCodeOverride =
                             (100 * variant.versionCode + versionCodes[abi]!!).plus(5000000)
@@ -112,7 +121,7 @@ android {
                     else
                         "universal"
 
-                    output.outputFileName = "v2rayNG_${variant.versionName}_${abi}.apk"
+                    output.outputFileName = "NovaRay_${variant.versionName}_${abi}.apk"
                     if (versionCodes.containsKey(abi)) {
                         output.versionCodeOverride =
                             (1000000 * versionCodes[abi]!!).plus(variant.versionCode)

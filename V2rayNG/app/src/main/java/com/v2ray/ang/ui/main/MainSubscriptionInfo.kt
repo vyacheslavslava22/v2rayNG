@@ -53,6 +53,8 @@ internal data class SubscriptionInfoUiModel(
     val expired: Boolean,
     val supportUrl: String?,
     val webPageUrl: String?,
+    /** Provider message from the `Announce` header. */
+    val announce: String? = null,
 ) {
     val trafficLow: Boolean get() = trafficFraction != null && trafficFraction >= TRAFFIC_WARNING_FRACTION
 
@@ -76,6 +78,7 @@ internal fun buildSubscriptionInfoUiModel(
         expired = expireMillis != null && expireMillis <= nowMillis,
         supportUrl = info.supportUrl,
         webPageUrl = info.webPageUrl,
+        announce = info.announce,
     )
 }
 
@@ -134,6 +137,19 @@ internal fun SubscriptionInfoCard(
                     iconRes = R.drawable.ic_refresh_24dp,
                     contentDescription = stringResource(R.string.title_sub_update),
                     onClick = onRefresh,
+                )
+            }
+
+            model.announce?.let { text ->
+                Text(
+                    text = text,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 8.dp, bottom = 4.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 

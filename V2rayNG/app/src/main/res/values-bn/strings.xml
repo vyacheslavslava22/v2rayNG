@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">v2rayNG</string>
+    <string name="app_name" translatable="false">NovaRay</string>
     <string name="app_widget_name">সুইচ</string>
     <string name="app_tile_name">সুইচ</string>
     <string name="app_tile_first_use">এই ফিচারটি প্রথম ব্যবহার করা হচ্ছে, সার্ভার যোগ করতে অ্যাপটি ব্যবহার করুন</string>
@@ -14,7 +14,7 @@
     <string name="pull_down_to_refresh">রিফ্রেশ করতে নিচে টানুন!</string>
 
     <!-- Notifications -->
-    <string name="notification_channel_service">v2rayNG সার্ভিস</string>
+    <string name="notification_channel_service">NovaRay সার্ভিস</string>
     <string name="notification_channel_subscription_updates">সাবস্ক্রিপশন আপডেট</string>
     <string name="notification_channel_connection_checks">সংযোগ পরীক্ষা</string>
     <string name="notification_action_stop_v2ray">বন্ধ করুন</string>
@@ -564,5 +564,13 @@
     <string name="sub_info_open_support">সাপোর্ট লিঙ্ক খুলুন</string>
     <string name="sub_info_open_page">সাবস্ক্রিপশন তথ্যের পাতা খুলুন</string>
     <string name="sub_info_unlimited">সীমাহীন</string>
+
+    <!-- NovaRay additions -->
+    <string name="toast_happ_routing_imported">Routing profile imported</string>
+    <string name="toast_happ_encrypted_unsupported">Encrypted Happ links (happ://crypt) cannot be opened by other apps. Ask your provider for a regular subscription link.</string>
+    <string name="title_pref_auto_select_best_after_test">Select fastest server after test</string>
+    <string name="summary_pref_auto_select_best_after_test">After testing all servers, select the one with the lowest delay (only while disconnected)</string>
+    <string name="title_pref_apply_sub_routing">Apply routing from subscription</string>
+    <string name="summary_pref_apply_sub_routing">Use the routing profile your provider sends with the subscription (Happ-compatible header)</string>
 
 </resources>

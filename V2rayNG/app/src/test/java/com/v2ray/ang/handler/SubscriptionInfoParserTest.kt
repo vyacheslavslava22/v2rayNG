@@ -88,4 +88,14 @@ class SubscriptionInfoParserTest {
         assertEquals("https://p.example/info", SubscriptionInfoParser.withWebPageFallback(own, "https://p.example/sub/abc").webPageUrl)
         assertNull(SubscriptionInfoParser.withWebPageFallback(base, "not a url").webPageUrl)
     }
+
+    @Test
+    fun parsesAnnounceHeaderAlone() {
+        val b64 = Base64.getEncoder().encodeToString("Плановые работы в 03:00".toByteArray())
+        val info = SubscriptionInfoParser.parse(null, null, null, null, decode, announce = "base64:$b64")!!
+        assertEquals("Плановые работы в 03:00", info.announce)
+        assertEquals("Hello", SubscriptionInfoParser.parse(null, null, null, null, decode, announce = "  Hello ")!!.announce)
+        assertNull(SubscriptionInfoParser.parse(null, null, null, null, decode, announce = "   "))
+        assertEquals(500, SubscriptionInfoParser.parse(null, null, null, null, decode, announce = "x".repeat(900))!!.announce!!.length)
+    }
 }

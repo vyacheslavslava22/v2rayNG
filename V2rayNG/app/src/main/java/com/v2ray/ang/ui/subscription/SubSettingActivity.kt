@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -288,11 +290,13 @@ fun SubSettingScreen(
         var autoTestAfterUpdateSubscription by rememberMmkvBool(AppConfig.PREF_AUTO_TEST_AFTER_UPDATE_SUBSCRIPTION, false)
         var autoRemoveInvalidAfterTest by rememberMmkvBool(AppConfig.PREF_AUTO_REMOVE_INVALID_AFTER_TEST, false)
         var autoSortAfterTest by rememberMmkvBool(AppConfig.PREF_AUTO_SORT_AFTER_TEST, false)
+        var autoSelectBestAfterTest by rememberMmkvBool(AppConfig.PREF_AUTO_SELECT_BEST_AFTER_TEST, false)
+        var applySubRouting by rememberMmkvBool(AppConfig.PREF_APPLY_SUB_ROUTING, true)
 
         AlertDialog(
             onDismissRequest = { showUpdateDialog = false },
             text = {
-                Column {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
                     SettingsSwitchItem(
                         title = stringResource(R.string.title_sub_update),
                         checked = updateSubscription,
@@ -317,6 +321,18 @@ fun SubSettingScreen(
                         checked = autoSortAfterTest,
                         enabled = autoTestAfterUpdateSubscription,
                         onCheckedChange = { autoSortAfterTest = it }
+                    )
+                    SettingsSwitchItem(
+                        title = stringResource(R.string.title_pref_auto_select_best_after_test),
+                        summary = stringResource(R.string.summary_pref_auto_select_best_after_test),
+                        checked = autoSelectBestAfterTest,
+                        onCheckedChange = { autoSelectBestAfterTest = it }
+                    )
+                    SettingsSwitchItem(
+                        title = stringResource(R.string.title_pref_apply_sub_routing),
+                        summary = stringResource(R.string.summary_pref_apply_sub_routing),
+                        checked = applySubRouting,
+                        onCheckedChange = { applySubRouting = it }
                     )
                 }
             },

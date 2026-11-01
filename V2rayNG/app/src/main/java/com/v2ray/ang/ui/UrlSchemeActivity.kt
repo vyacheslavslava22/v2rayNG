@@ -9,7 +9,9 @@ import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.extension.toastError
+import com.v2ray.ang.extension.toastSuccess
 import com.v2ray.ang.handler.AngConfigManager
+import com.v2ray.ang.handler.HappLinkParser
 import com.v2ray.ang.ui.base.BaseComponentActivity
 import com.v2ray.ang.ui.main.MainActivity
 import com.v2ray.ang.util.LogUtil
@@ -30,6 +32,8 @@ class UrlSchemeActivity : BaseComponentActivity() {
                             parseUri(it, null)
                         }
                     }
+                } else if (action == Intent.ACTION_VIEW && data?.scheme.equals(HAPP_SCHEME, ignoreCase = true)) {
+                    importHappLink(intent.dataString)
                 } else if (action == Intent.ACTION_VIEW) {
                     when (data?.host) {
                         "install-config" -> {
@@ -62,6 +66,33 @@ class UrlSchemeActivity : BaseComponentActivity() {
     override fun ScreenContent() {
     }
 
+    /**
+     * Handles Happ links: happ://add/<url> (subscription or config) and
+     * happ://routing/add|onadd/<base64> (routing profile). Encrypted happ://crypt links use a
+     * proprietary key and are rejected with an explanation.
+     */
+    private fun importHappLink(link: String?) {
+        if (link.isNullOrBlank()) {
+            toastError(R.string.toast_failure)
+            return
+        }
+        if (HappLinkParser.isEncryptedLink(link)) {
+            toastError(R.string.toast_happ_encrypted_unsupported, true)
+            return
+        }
+        val isRouting = HappLinkParser.isRoutingLink(link)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val (count, countSub) = AngConfigManager.importBatchConfig(link, "", false)
+            withContext(Dispatchers.Main) {
+                when {
+                    isRouting && count > 0 -> toastSuccess(R.string.toast_happ_routing_imported)
+                    count + countSub > 0 -> toast(R.string.import_subscription_success)
+                    else -> toastError(R.string.import_subscription_failure)
+                }
+            }
+        }
+    }
+
     private fun parseUri(uriString: String?, fragment: String?) {
         if (uriString.isNullOrEmpty()) {
             return
@@ -86,5 +117,9 @@ class UrlSchemeActivity : BaseComponentActivity() {
                 }
             }
         }
+    }
+
+    private companion object {
+        const val HAPP_SCHEME = "happ"
     }
 }
